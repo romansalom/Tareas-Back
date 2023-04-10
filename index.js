@@ -1,4 +1,6 @@
-const getProducts = []
+const fs = require('fs');
+
+const getProducts = [];
 
 class ProductManager{
     static id = 1;
@@ -46,16 +48,75 @@ addProduct(){
        
     
     }
-    getById(id){
-        const getProducts =this.getAll()
-        if(!this.checkLength(getProducts)){
-            return
-        }
-        let productos = getProducts.find(elemento => elemento.id == id)
-        return productos ? productos : null
+
+     getById(id){
+        const obtenerproductos = JSON.parse(fs.readFileSync('productos.json', 'utf-8'));
+        obtenerproductos.map((element)=>{ if(element.id == id)
+            console.log(element) })
+
+        
+        
+      
+        
     }
+
+    guardaEnArchivo(){
+        try{
+            fs.writeFileSync('productos.json', JSON.stringify(getProducts));
     
-}
+        }catch(err){
+            throw new Error (err);
+    
+        }
+    
+    }
+    cargarElArchivo(){
+        try{
+            
+            const obtenerproductos = JSON.parse(fs.readFileSync('productos.json', 'utf-8'));
+            console.log(obtenerproductos);
+        }catch(err){
+            throw new Error(err);
+        }
+    }
+    modificarArchivo(id , nuevosDatos){
+        
+        getProducts.map((element)=>{
+            if(element.id == id ){
+              element.title = nuevosDatos.title;
+              element.description = nuevosDatos.description;
+              element.price = nuevosDatos.price;
+              element.thumbnail = nuevosDatos.thumbnail;
+              element.code = nuevosDatos.code;
+              element.stock = nuevosDatos.stock;
+              element.id = id;
+
+                console.log(id);
+            }
+            fs.writeFileSync('productos.json', JSON.stringify(getProducts));
+            
+        })
+    }
+
+        borrarProductos(id){
+            const productoborrar = [];
+            getProducts.map((element)=>{
+                if(element.id !== id){
+                    productoborrar.push(element);
+
+
+                }
+                fs.writeFileSync('productos.json', JSON.stringify(productoborrar));
+            })
+
+        }
+        
+     
+    }
+
+    
+
+
 
 
 
@@ -68,5 +129,12 @@ let producto2 = new ProductManager("escuadra" , "triangular" , 12, "www.escuadra
 producto2.addProduct();
 let producto3 = new ProductManager("lapiz" , "de color" , 11, "www.lapizdecolores.com" , 1200 , 6);
 producto3.addProduct();
+let producto4 = new ProductManager("marcador " , "roja" , 15, "www.lapizdecolores.com" , 12040 , 64)
+producto4.addProduct();
+producto4.guardaEnArchivo();
+producto4.cargarElArchivo();
 
-console.log(getProducts);
+   // producto4.getById(2);
+    producto1.modificarArchivo(1,{title:"Goma" , description:"azul", code:"2331" , price:"234" , thumbnail:"www.gomaazul.com", stock:"111"});
+
+    producto2.borrarProductos(2);
